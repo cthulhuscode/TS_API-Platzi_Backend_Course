@@ -1,5 +1,6 @@
 import faker from "faker";
 import { IProduct } from "../interfaces/IProduct";
+import boom from "@hapi/boom";
 
 export class ProductsService {
   private products: IProduct[] = [];
@@ -21,34 +22,46 @@ export class ProductsService {
     }
   }
 
-  find(size?: number | undefined) {
+  async find(size?: number | undefined) {
     let productsTemp = [...this.products];
+
+    if (!productsTemp) throw boom.notFound("There are not any product yet");
 
     if (size && size <= 100) productsTemp = this.products.slice(0, size);
 
     return productsTemp;
   }
 
-  findOne(id: string) {
-    return this.products.find((product) => product.id === id);
+  async findOne(id: string) {
+    const product = this.products.find((product) => product.id === id);
+
+    if (!product) throw boom.notFound("The product wasn't found");
+
+    return product;
   }
 
-  create(product: Omit<IProduct, "id">) {
+  async create(product: Omit<IProduct, "id">) {
     const newProduct = {
       id: faker.datatype.uuid(),
       ...product,
     };
+
+    if (!newProduct)
+      throw boom.badImplementation(
+        "There was an error while creating the new product"
+      ); // status code: 500
 
     this.products.push(newProduct);
 
     return newProduct;
   }
 
-  update(id: string, changes: Omit<IProduct, "id">) {
+  async update(id: string, changes: Omit<IProduct, "id">) {
     const productIndex = this.products.findIndex(
       (product) => product.id === id
     );
-    if (productIndex === -1) throw new Error("Product not found");
+
+    if (productIndex === -1) throw boom.notFound("The product wasn't found");
 
     const productTemp = this.products[productIndex];
 
@@ -57,11 +70,11 @@ export class ProductsService {
     return this.products[productIndex];
   }
 
-  delete(id: string) {
+  async delete(id: string) {
     const productIndex = this.products.findIndex(
       (product) => product.id === id
     );
-    if (productIndex === -1) throw new Error("Product not found");
+    if (productIndex === -1) throw boom.notFound("The product wasn't found");
 
     this.products.splice(productIndex, 1);
 
