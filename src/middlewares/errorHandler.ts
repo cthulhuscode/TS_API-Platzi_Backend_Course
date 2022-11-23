@@ -1,15 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import { Boom } from "@hapi/boom";
 
-export function logErrors(
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  console.log(err);
-  next(err);
-}
+// export function logErrors(
+//   err: Error,
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) {
+//   console.log(err);
+//   next(err);
+// }
 
 export function errorHandler(
   err: Error | Boom | any,
