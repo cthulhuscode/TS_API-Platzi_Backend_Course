@@ -1,26 +1,18 @@
-import { Request, Response, Router } from "express";
-import { CategoriesService } from "../services/categories";
-
-const service = new CategoriesService();
+import { Router } from "express";
+import {
+  getCategories,
+  addCategory,
+  putCategory,
+  patchCategory,
+  deleteCategory,
+  getCategory,
+} from "../controllers/categories";
 
 export const router = Router();
 
-router.get("/", (req: Request, res: Response) => {
-  const categories = service.find();
-  res.status(200).json(categories);
-});
-
-router.get("/:id", (req: Request, res: Response) => {
-  const category = service.findOne(req.params.id);
-  res.status(200).json(category);
-});
-
-router.get(
-  "/:categoryId/products/:productId",
-  (req: Request, res: Response) => {
-    const { categoryId, productId } = req.params;
-    res
-      .status(200)
-      .json({ productId, categoryId, name: "Product2", price: 2000 });
-  }
-);
+router.get("/", getCategories);
+router.get("/:id", getCategory);
+router.post("/", addCategory);
+router.put("/:id", putCategory);
+router.patch("/:id", patchCategory);
+router.delete("/:id", deleteCategory);
